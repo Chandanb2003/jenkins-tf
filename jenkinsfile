@@ -1,5 +1,4 @@
 pipeline {
-
     options {
         buildDiscarder(logRotator(numToKeepStr: '5', artifactNumToKeepStr: '5'))
     }
@@ -7,33 +6,33 @@ pipeline {
     agent any
 
     environment {
-    AWS_ACCESS_KEY_ID     = credentials('terraform-aws-airindia-jenkins')
-    AWS_SECRET_ACCESS_KEY = credentials('terraform-aws-airindia-jenkins')
+        AWS_ACCESS_KEY_ID     = credentials('aws-access-key')   // Use a separate credential ID
+        AWS_SECRET_ACCESS_KEY = credentials('aws-secret-key')   // Use another credential ID
     }
+
     stages {
         stage('Terraform Version') {
             steps {
-                echo 'Terraform Initialization is In Progress!'
+                echo 'Checking Terraform Version...'
                 sh 'terraform --version'
             }
         }
-        stage('Terraform format') {
+        stage('Terraform Format') {
             steps {
-                echo 'Terraform Initialization is In Progress!'
+                echo 'Checking Terraform Formatting...'
                 sh 'terraform fmt'
             }
-        }		
-        stage('Terraform init') {
+        }       
+        stage('Terraform Init') {
             steps {
-                echo 'Terraform Initialization is In Progress!'
+                echo 'Initializing Terraform...'
                 sh 'terraform init'
             }
         }
         stage('Terraform Plan') {
             steps {
-                echo 'Terraform Initialization is In Progress!'
+                echo 'Generating Terraform Plan...'
                 sh 'terraform plan -var-file=terraform.tfvars -out=tfplan.txt'
-
             }
         }
         stage('Approval') {
@@ -42,7 +41,6 @@ pipeline {
                     equals expected: true, actual: params.autoApprove
                 }
             }
-
             steps {
                 script {
                     def plan = readFile 'tfplan.txt'
@@ -53,10 +51,9 @@ pipeline {
         }       
         stage('Terraform Apply') {
             steps {
-                echo 'Terraform Apply'
+                echo 'Applying Terraform Changes...'
                 sh 'terraform apply --auto-approve'
             }
         }
-	}
-
-} 
+    }
+}
