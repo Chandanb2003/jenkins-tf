@@ -1,4 +1,4 @@
-ami_id         = "ami-0b99c7725b9484f9e"
+ami_id         = "ami-05c179eced2eb9b5b"
 instance_count = 2
 instance_size  = "t2.micro"
 instance_key   = "aws-2025"
